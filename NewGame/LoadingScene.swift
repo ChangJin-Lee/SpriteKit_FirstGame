@@ -23,14 +23,6 @@ class LoadingScene: SKScene {
         addcrawlingPlayer()
         addplayBtn()
         
-        
-//        run(SKAction.repeatForever(
-//            SKAction.sequence([
-//                SKAction.run(addMonster),
-//                SKAction.wait(forDuration: 0.25)
-//            ])
-//        ))
-//        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

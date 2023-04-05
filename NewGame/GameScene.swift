@@ -5,8 +5,11 @@
 //  Created by CHANG JIN LEE on 2023/03/16.
 //
 
+import Foundation
 import SpriteKit
 import GameplayKit
+import SwiftUI
+import GameController
 
 
 struct PhysicsCategory {
@@ -63,11 +66,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let joystick = SKShapeNode(circleOfRadius: 50)
     
+    var virtualController: GCVirtualController?
+    var playerPosx : CGFloat = 0
+    var playerPosy : CGFloat = 0
+    var projectile_dict: [Int : String] = [ 0 : "egg",
+                                            1 : "projectile"]
+    var projectileSelector : Int = 0
+    
     override func didMove(to view: SKView) {
         
-        
         addPlayer()
-        addjoystick()
+//        addjoystick()
         setUpBackground()
         
         // collision detection
@@ -77,24 +86,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         runforever()
     }
     
-//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        for touch in touches {
-//                let location = touch.location(in: self)
-//                let node = self.atPoint(location)
-//                if node == joystick {
-//                    let dx = location.x - joystick.position.x
-//                    let dy = location.y - joystick.position.y
-//                    let angle = atan2(dy, dx)
-//                    let distance = joystick.size.width / 2
-//                    let offsetX = distance * cos(angle)
-//                    let offsetY = distance * sin(angle)
-//                    let newPosition = CGPoint(x: joystick.position.x + offsetX, y: joystick.position.y + offsetY)
-//                    player.position = newPosition
-//                }
-//            }
-//    }
-    
-    
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else {
@@ -102,7 +93,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         let touchLocation = touch.location(in: self)
         
-        let projectile = SKSpriteNode(imageNamed: "egg")
+        let projectile = SKSpriteNode(imageNamed: projectile_dict[projectileSelector]!)
         projectile.position = player.position
         projectile.color = .white
         
@@ -129,29 +120,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let actionMove = SKAction.move(to: realDest, duration: 2.0)
         let actionMoveDone = SKAction.removeFromParent()
         projectile.run(SKAction.sequence([actionMove, actionMoveDone]))
-        
-//        for touch in touches {
-//                let location = touch.location(in: self)
-//                let node = self.atPoint(location)
-//                if node == joystick {
-//                    let move = SKAction.move(to: player.position, duration: 0.2)
-//                    player.run(move)
-//                }
-//            }
     }
-//
-//    override func update(_ currentTime: TimeInterval) {
-//        let dx = joystick.position.x - player.position.x
-//        let dy = joystick.position.y - player.position.y
-//        let distance = sqrt(dx*dx + dy*dy)
-//        if distance > joystick.size.width / 2 {
-//            let angle = atan2(dy, dx)
-//            let offsetX = joystick.size.width / 2 * cos(angle)
-//            let offsetY = joystick.size.width / 2 * sin(angle)
-//            joystick.position = CGPoint(x: player.position.x + offsetX, y: player.position.y + offsetY)
-//        }
-//    }
-//
     
     private func addPlayer(){
         // background color
@@ -165,6 +134,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         player.zPosition = 1
         
         addChild(player)
+        
+        connectVirtuellController()
         
     }
     
@@ -258,6 +229,94 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         collisiondetection(contact)
     }
     
+    override func update(_ currentTime: TimeInterval) {
+        playerPosx = CGFloat ( (virtualController?.controller?.extendedGamepad?.leftThumbstick.xAxis.value)!)
+        playerPosy = CGFloat ( (virtualController?.controller?.extendedGamepad?.leftThumbstick.yAxis.value)!)
+        if playerPosx >= 0.5 {
+            player.position.x += 3
+        }
+        if playerPosx <= -0.5 {
+            player.position.x -= 3
+        }
+        
+        if playerPosy >= 0.5 {
+            player.position.y += 3
+        }
+        if playerPosy <= -0.5 {
+            player.position.y -= 3
+        }
+        
+        if virtualController?.controller?.extendedGamepad?.buttonB.isTouched == true{
+            projectileSelector = 1
+        }
+        if virtualController?.controller?.extendedGamepad?.buttonA.isTouched == true{
+            projectileSelector = 0
+        }
+        
+        print(virtualController?.controller?.extendedGamepad?.buttonB.isTouched)
+        print(projectileSelector)
+    }
+    func connectVirtuellController(){
+        let controllerConfic = GCVirtualController.Configuration()
+        controllerConfic.elements = [GCInputLeftThumbstick, GCInputButtonA, GCInputButtonB]
+        
+        
+        let controller = GCVirtualController(configuration: controllerConfic)
+        
+        controller.updateConfiguration(forElement: GCInputButtonA, configuration: { _ in
+          let starPath = GCVirtualController.ElementConfiguration()
+            
+            let offX = -25.0
+            let offY = -26.0
+            starPath.path = UIBezierPath()
+            starPath.path!.move(to: CGPoint(x: 25+offX, y: 1+offY))
+            starPath.path!.addLine(to: CGPoint(x: 33.82+offX, y: 13.86+offY))
+            starPath.path!.addLine(to: CGPoint(x: 48.78+offX, y: 18.27+offY))
+            starPath.path!.addLine(to: CGPoint(x: 39.27+offX, y: 30.64+offY))
+            starPath.path!.addLine(to: CGPoint(x: 39.69+offX, y: 46.23+offY))
+            starPath.path!.addLine(to: CGPoint(x: 25+offX, y: 41+offY))
+            starPath.path!.addLine(to: CGPoint(x: 10.31+offX, y: 46.23+offY))
+            starPath.path!.addLine(to: CGPoint(x: 10.73+offX, y: 30.64+offY))
+            starPath.path!.addLine(to: CGPoint(x: 1.22+offX, y: 18.27+offY))
+            starPath.path!.addLine(to: CGPoint(x: 16.18+offX, y: 13.86+offY))
+            starPath.path!.close()
+            UIColor.blue.setFill()
+            starPath.path!.fill()
+            
+
+          return starPath
+        })
+        
+        controller.updateConfiguration(forElement: GCInputButtonB, configuration: { _ in
+          let starPath = GCVirtualController.ElementConfiguration()
+            
+            let offX = -25.0
+            let offY = -26.0
+            starPath.path = UIBezierPath()
+            starPath.path!.move(to: CGPoint(x: 25+offX, y: 1+offY))
+            starPath.path!.addLine(to: CGPoint(x: 33.82+offX, y: 13.86+offY))
+            starPath.path!.addLine(to: CGPoint(x: 48.78+offX, y: 18.27+offY))
+            starPath.path!.addLine(to: CGPoint(x: 39.27+offX, y: 30.64+offY))
+            starPath.path!.addLine(to: CGPoint(x: 39.69+offX, y: 46.23+offY))
+            starPath.path!.addLine(to: CGPoint(x: 25+offX, y: 41+offY))
+            starPath.path!.addLine(to: CGPoint(x: 10.31+offX, y: 46.23+offY))
+            starPath.path!.addLine(to: CGPoint(x: 10.73+offX, y: 30.64+offY))
+            starPath.path!.addLine(to: CGPoint(x: 1.22+offX, y: 18.27+offY))
+            starPath.path!.addLine(to: CGPoint(x: 16.18+offX, y: 13.86+offY))
+            starPath.path!.close()
+            UIColor.red.setFill()
+            starPath.path!.fill()
+            
+
+          return starPath
+        })
+        
+        
+//        controller.position(x: UIScene.main.bounds.width / 2, y: UIScene.main.bounds.height / 2)
+        controller.connect()
+        virtualController = controller
+    }
+    
     func collisiondetection(_ contact: SKPhysicsContact){
         var firstBody: SKPhysicsBody
         var secondBody: SKPhysicsBody
@@ -278,14 +337,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    
-    func addjoystick(){
-        joystick.strokeColor = .white
-        joystick.fillColor = .gray
-        joystick.alpha = 0.5
-        joystick.position = CGPoint(x: joystick.frame.width / 2 + 30, y: joystick.frame.height / 2 + 30)
-        addChild(joystick)
-    }
     
     func runforever(){
         run(SKAction.repeatForever(
