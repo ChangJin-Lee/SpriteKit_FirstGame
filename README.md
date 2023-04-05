@@ -54,8 +54,8 @@ NewGame
 
 <div align="center"> 
   
-| [CJ](https://github.com/ChangJin-Lee) | |
-|:---:||
+|[CJ](https://github.com/ChangJin-Lee)| |
+|:---:|:---:|
 |CJ Image| |
 
   
