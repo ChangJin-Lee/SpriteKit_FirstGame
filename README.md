@@ -1,20 +1,32 @@
 # SpriteKit_FirstGame
 my First Game using spritekit
 
-✨ Skills & Tech Stack
-spritekit
-GameplayKit
-GameController
+<br/>
 
-🛠 Development Environment
-Generic badge Generic badge
+### :sparkles: Skills & Tech Stack
+* GameplayKit
+* GameController
+* spritekit
 
 
-🔀 Git branch & Git Flow
+
+<br/>
+
+### 🛠 Development Environment
+
+![Generic badge](https://img.shields.io/badge/iOS-15.0+-lightgrey.svg) ![Generic badge](https://img.shields.io/badge/Xcode-14.1-blue.svg)
+
+<br/>
+
+### 🔀 Git branch & Git Flow
+
+```
 develop(default)
+```
+<br/>
 
-
-🗂 Folder Structure
+### 🗂 Folder Structure
+```
 NewGame
 │ 
 ├── GameScene.swift
@@ -33,9 +45,24 @@ NewGame
     ├── start-button
     └── projectile
 
+```
 
-🧑‍💻 Authors
-CJ
-CJ
-🔏 License
-MIT
+<br/>
+
+  
+### 🧑‍💻 Authors
+
+<div align="center"> 
+  
+| [CJ](https://github.com/ChangJin-Lee) | |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|CJ Image| |
+
+  
+</div>
+
+<br/>
+
+### :lock_with_ink_pen: License
+
+[MIT](https://choosealicense.com/licenses/mit/)
